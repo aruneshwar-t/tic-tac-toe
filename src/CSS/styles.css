@@ -1,0 +1,59 @@
+@import url('../CSS/vars.css');
+
+*{
+    margin:0;
+    padding:0;
+    font-family: var(--font);
+}
+
+body, html{
+    width:100%;
+    height:100%;
+    background-color: var(--bg);
+}
+
+.card{
+    width:400px;
+    height:60%;
+    background-color: var(--dark-blue);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    gap:40px;
+    border-radius:20px;
+}
+
+body{
+    color: var(--yellow);
+    display:flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    font-size:50px;
+}
+
+.home-page-redirects{
+    display:flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items:center;
+}
+
+.home-page-redirects .login-redirect input{
+    background-color: var(--blue);
+    color:var(--white);
+    font-size:25px;
+    width:150px;
+    height:40px;
+    border-radius: 20px;
+}
+
+.home-page-redirects .register-redirect input{
+    background-color: var(--red);
+    color:var(--white);
+    font-size:25px;
+    border-radius: 20px;
+    height:40px;
+    width:200px
+}
