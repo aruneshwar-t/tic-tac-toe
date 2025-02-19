@@ -1,27 +1,36 @@
 import { createBoard, checkWinner, isBoardFull, randomMove, Score } from './utils.js';
 
-function easyAIMove(board, playerSymbol, computerSymbol) {
-    let emptyCells = [];
+function findWinningMove(board, symbol) {
     for (let row = 0; row < 3; row++) {
         for (let col = 0; col < 3; col++) {
-            if (!board[row][col]) emptyCells.push([row, col]);
+            if (!board[row][col]) {
+                board[row][col] = symbol;
+                if (checkWinner(board) === symbol) {
+                    board[row][col] = null;
+                    return { row, col };
+                }
+                board[row][col] = null;
+            }
         }
     }
+    return null;
+}
 
-    // Ensure the move does not block the player's winning move
-    let validMoves = emptyCells.filter(([row, col]) => {
-        const testBoard = JSON.parse(JSON.stringify(board));
-        testBoard[row][col] = computerSymbol;
-        return checkWinner(testBoard) !== computerSymbol && checkWinner(testBoard) !== playerSymbol;
-    });
-
-    if (validMoves.length === 0) {
-        // If all moves block the player, just make a random move
-        validMoves = emptyCells;
+function mediumAIMove(board, playerSymbol, computerSymbol) {
+    // Check if the computer can win in the next move
+    let winningMove = findWinningMove(board, computerSymbol);
+    if (winningMove) {
+        return winningMove;
     }
 
-    const randomIndex = Math.floor(Math.random() * validMoves.length);
-    return { row: validMoves[randomIndex][0], col: validMoves[randomIndex][1] };
+    // Check if the player can win in the next move and block them
+    let blockingMove = findWinningMove(board, playerSymbol);
+    if (blockingMove) {
+        return blockingMove;
+    }
+
+    // Otherwise, make a random move
+    return randomMove(board);
 }
 
 // Game logic
@@ -104,7 +113,7 @@ class Game {
     }
 
     makeComputerMove() {
-        const { row, col } = easyAIMove(this.board, this.playerSymbol, this.computerSymbol);
+        const { row, col } = mediumAIMove(this.board, this.playerSymbol, this.computerSymbol);
         this.makeMove(row, col);
     }
 

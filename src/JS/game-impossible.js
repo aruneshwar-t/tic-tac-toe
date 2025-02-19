@@ -1,27 +1,68 @@
 import { createBoard, checkWinner, isBoardFull, randomMove, Score } from './utils.js';
 
-function easyAIMove(board, playerSymbol, computerSymbol) {
+function minimax(board, depth, isMaximizing, playerSymbol, computerSymbol) {
+    const winner = checkWinner(board);
+    if (winner === computerSymbol) return 10 - depth;
+    if (winner === playerSymbol) return depth - 10;
+    if (isBoardFull(board)) return 0;
+
+    if (isMaximizing) {
+        let bestScore = -Infinity;
+        for (let row = 0; row < 3; row++) {
+            for (let col = 0; col < 3; col++) {
+                if (!board[row][col]) {
+                    board[row][col] = computerSymbol;
+                    const score = minimax(board, depth + 1, false, playerSymbol, computerSymbol);
+                    board[row][col] = null;
+                    bestScore = Math.max(score, bestScore);
+                }
+            }
+        }
+        return bestScore;
+    } else {
+        let bestScore = Infinity;
+        for (let row = 0; row < 3; row++) {
+            for (let col = 0; col < 3; col++) {
+                if (!board[row][col]) {
+                    board[row][col] = playerSymbol;
+                    const score = minimax(board, depth + 1, true, playerSymbol, computerSymbol);
+                    board[row][col] = null;
+                    bestScore = Math.min(score, bestScore);
+                }
+            }
+        }
+        return bestScore;
+    }
+}
+
+function bestMove(board, playerSymbol, computerSymbol) {
+    let bestScore = -Infinity;
+    let move;
+    for (let row = 0; row < 3; row++) {
+        for (let col = 0; col < 3; col++) {
+            if (!board[row][col]) {
+                board[row][col] = computerSymbol;
+                const score = minimax(board, 0, false, playerSymbol, computerSymbol);
+                board[row][col] = null;
+                if (score > bestScore) {
+                    bestScore = score;
+                    move = { row, col };
+                }
+            }
+        }
+    }
+    return move;
+}
+
+function randomFirstMove(board) {
     let emptyCells = [];
     for (let row = 0; row < 3; row++) {
         for (let col = 0; col < 3; col++) {
             if (!board[row][col]) emptyCells.push([row, col]);
         }
     }
-
-    // Ensure the move does not block the player's winning move
-    let validMoves = emptyCells.filter(([row, col]) => {
-        const testBoard = JSON.parse(JSON.stringify(board));
-        testBoard[row][col] = computerSymbol;
-        return checkWinner(testBoard) !== computerSymbol && checkWinner(testBoard) !== playerSymbol;
-    });
-
-    if (validMoves.length === 0) {
-        // If all moves block the player, just make a random move
-        validMoves = emptyCells;
-    }
-
-    const randomIndex = Math.floor(Math.random() * validMoves.length);
-    return { row: validMoves[randomIndex][0], col: validMoves[randomIndex][1] };
+    const randomIndex = Math.floor(Math.random() * emptyCells.length);
+    return { row: emptyCells[randomIndex][0], col: emptyCells[randomIndex][1] };
 }
 
 // Game logic
@@ -33,6 +74,7 @@ class Game {
         this.playerSymbol = 'X';
         this.computerSymbol = 'O';
         this.score = new Score();
+        this.isFirstMove = true;
         this.init();
     }
 
@@ -70,6 +112,7 @@ class Game {
         this.board = createBoard();
         this.currentPlayer = 'X';
         this.isGameOver = false;
+        this.isFirstMove = true;
         this.updateBoardUI();
         this.updateStatusUI(`Player ${this.currentPlayer}'s turn`);
         this.askPlayerSymbol(); // Ask for player symbol again on reset
@@ -104,8 +147,14 @@ class Game {
     }
 
     makeComputerMove() {
-        const { row, col } = easyAIMove(this.board, this.playerSymbol, this.computerSymbol);
-        this.makeMove(row, col);
+        let move;
+        if (this.computerSymbol === 'X' && this.isFirstMove) {
+            move = randomFirstMove(this.board);
+            this.isFirstMove = false;
+        } else {
+            move = bestMove(this.board, this.playerSymbol, this.computerSymbol);
+        }
+        this.makeMove(move.row, move.col);
     }
 
     updateBoardUI() {
