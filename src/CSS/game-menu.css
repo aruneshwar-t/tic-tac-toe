@@ -61,17 +61,17 @@ body {
     background-color: var(--blue);
 }
 
-.play-mode-redirects .pass-and-play-redirect .button-wrapper {
+.play-mode-redirects .multiplayer-redirect .button-wrapper {
     background-color: var(--red);
 }
 
-.pass-and-play-redirect .button-icon{
+.multiplayer-redirect .button-icon{
     width:60px;
     height:60px;
     margin-left:-10px;
 }
 
-.pass-and-play-redirect span{
+.multiplayer-redirect span{
     margin-left:-15px;
 }
 

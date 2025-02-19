@@ -24,6 +24,10 @@ body, html {
     border-radius: 20px;
 }
 
+.card-title{
+    font-size:30px;
+}
+
 body {
     color: var(--yellow);
     display: flex;
