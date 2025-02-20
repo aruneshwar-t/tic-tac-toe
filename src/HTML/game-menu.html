@@ -3,7 +3,7 @@
     <head>
         <meta charset="utf-8">
         <meta http-equiv="X-UA-Compatible" content="IE=edge">
-        <title></title>
+        <title>Game Menu</title>
         <meta name="description" content="">
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <link rel="stylesheet" href="../CSS/game-menu.css">
@@ -11,6 +11,11 @@
     </head>
     <body>
         <div class="card">
+            <div class="logout-button">
+                <div class="button-wrapper" id="logout-button">
+                    <img src="../../assets/logout.svg" alt="icon" class="button-icon">
+                </div>
+            </div>
             <div class="card-title">PLAYER MODE</div>
             <div class="play-mode-redirects">
                 <div class="play-bots-redirect">
@@ -20,7 +25,7 @@
                     </div>
                 </div>
                 <div class="multiplayer-redirect">
-                    <div class="button-wrapper" onclick="location.href = 'game-board.html'">
+                    <div class="button-wrapper" onclick="location.href = 'game.html'">
                         <img src="../../assets/person.svg" alt="icon" class="button-icon">
                         <span>MULTIPLAYER</span>
                     </div>
@@ -28,6 +33,7 @@
             </div>
         </div>
         
-        <script src="" async defer></script>
+        <script src="../JS/auth.js" type="module"></script>
+        <script src="../JS/logout.js" type="module"></script>
     </body>
 </html>

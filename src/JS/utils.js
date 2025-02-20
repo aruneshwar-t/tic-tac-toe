@@ -1,6 +1,7 @@
 // Utility functions
 
 export function createBoard() {
+    console.log("Board created")
     const board = [];
     for (let i = 0; i < 3; i++) {
         board.push(new Array(3).fill(null));
@@ -49,9 +50,13 @@ export function randomMove(board) {
 
 // Scoring system
 export class Score {
-    constructor() {
-        this.userScore = 0;
-        this.computerScore = 0;
+    constructor(difficulty, email) {
+        this.difficulty = difficulty;
+        this.email = email;
+        const savedScores = JSON.parse(localStorage.getItem('scores')) || {};
+        const userScores = savedScores[this.email] || {};
+        this.userScore = userScores[this.difficulty]?.userScore || 0;
+        this.computerScore = userScores[this.difficulty]?.computerScore || 0;
         this.updateScoreUI();
     }
 
@@ -61,6 +66,7 @@ export class Score {
         } else if (player === 'computer') {
             this.computerScore++;
         }
+        this.saveScores();
         this.updateScoreUI();
     }
 
@@ -69,9 +75,21 @@ export class Score {
         document.querySelector('.right-player .player-score').textContent = this.computerScore;
     }
 
+    saveScores() {
+        const savedScores = JSON.parse(localStorage.getItem('scores')) || {};
+        const userScores = savedScores[this.email] || {};
+        userScores[this.difficulty] = {
+            userScore: this.userScore,
+            computerScore: this.computerScore,
+        };
+        savedScores[this.email] = userScores;
+        localStorage.setItem('scores', JSON.stringify(savedScores));
+    }
+
     resetScores() {
         this.userScore = 0;
         this.computerScore = 0;
+        this.saveScores();
         this.updateScoreUI();
     }
 }

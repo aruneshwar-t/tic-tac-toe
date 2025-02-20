@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>Reset Local Storage</title>
+    <meta name="description" content="">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link href="https://fonts.googleapis.com/css2?family=Tiny5&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Tiny5', sans-serif;
+            background-color: #f0f0f0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+
+        .card {
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+            width: 300px;
+            text-align: center;
+        }
+
+        .reset-title {
+            font-size: 24px;
+            margin-bottom: 20px;
+        }
+
+        .reset-button {
+            padding: 10px 20px;
+            font-size: 16px;
+            background-color: #d9534f;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        .reset-button:hover {
+            background-color: #c9302c;
+        }
+    </style>
+</head>
+<body>
+    <div class="card">
+        <div class="reset-title">Reset Local Storage</div>
+        <button class="reset-button" id="resetButton">Reset</button>
+    </div>
+
+    <script>
+        document.getElementById('resetButton').addEventListener('click', function() {
+            if (confirm('Are you sure you want to reset all data in local storage?')) {
+                localStorage.clear();
+                alert('All data in local storage has been reset.');
+            }
+        });
+    </script>
+</body>
+</html>

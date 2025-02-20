@@ -1,5 +1,8 @@
 import { createBoard, checkWinner, isBoardFull, randomMove, Score } from './utils.js';
 
+// Add a console statement at the top of the file to confirm it runs
+console.log("game-impossible.js is loaded and running");
+
 function minimax(board, depth, isMaximizing, playerSymbol, computerSymbol) {
     const winner = checkWinner(board);
     if (winner === computerSymbol) return 10 - depth;
@@ -54,31 +57,22 @@ function bestMove(board, playerSymbol, computerSymbol) {
     return move;
 }
 
-function randomFirstMove(board) {
-    let emptyCells = [];
-    for (let row = 0; row < 3; row++) {
-        for (let col = 0; col < 3; col++) {
-            if (!board[row][col]) emptyCells.push([row, col]);
-        }
-    }
-    const randomIndex = Math.floor(Math.random() * emptyCells.length);
-    return { row: emptyCells[randomIndex][0], col: emptyCells[randomIndex][1] };
-}
-
-// Game logic
 class Game {
-    constructor() {
+    constructor(difficulty, email) {
+        console.log("Game initialized in game-impossible.js");
         this.board = createBoard();
         this.currentPlayer = 'X';
         this.isGameOver = false;
         this.playerSymbol = 'X';
         this.computerSymbol = 'O';
-        this.score = new Score();
-        this.isFirstMove = true;
+        this.difficulty = difficulty;
+        this.email = email;
+        this.score = new Score(difficulty, email);
         this.init();
     }
 
     init() {
+        console.log("Initializing game...");
         const cells = document.querySelectorAll('[data-cell]');
         cells.forEach((cell, index) => {
             cell.addEventListener('click', () => this.makeMove(Math.floor(index / 3), index % 3));
@@ -91,17 +85,20 @@ class Game {
     }
 
     askPlayerSymbol() {
+        console.log("Asking player to choose symbol...");
         this.showDialog(
             'Choose your symbol:',
-            `<button onclick="game.setPlayerSymbol('X')">X</button>
-             <button onclick="game.setPlayerSymbol('O')">O</button>`
+            `<button onclick="window.game.setPlayerSymbol('X')">X</button>
+             <button onclick="window.game.setPlayerSymbol('O')">O</button>`
         );
     }
 
     setPlayerSymbol(symbol) {
+        console.log(`Player chose symbol: ${symbol}`);
         this.playerSymbol = symbol;
         this.computerSymbol = this.playerSymbol === 'X' ? 'O' : 'X';
-        document.querySelector('.dialog').remove();
+        const dialog = document.querySelector('.dialog');
+        if (dialog) dialog.remove();
 
         if (this.playerSymbol === 'O') {
             this.makeComputerMove();
@@ -109,13 +106,13 @@ class Game {
     }
 
     reset() {
+        console.log("Resetting game...");
         this.board = createBoard();
         this.currentPlayer = 'X';
         this.isGameOver = false;
-        this.isFirstMove = true;
         this.updateBoardUI();
         this.updateStatusUI(`Player ${this.currentPlayer}'s turn`);
-        this.askPlayerSymbol(); // Ask for player symbol again on reset
+        this.askPlayerSymbol();
     }
 
     makeMove(row, col) {
@@ -147,14 +144,8 @@ class Game {
     }
 
     makeComputerMove() {
-        let move;
-        if (this.computerSymbol === 'X' && this.isFirstMove) {
-            move = randomFirstMove(this.board);
-            this.isFirstMove = false;
-        } else {
-            move = bestMove(this.board, this.playerSymbol, this.computerSymbol);
-        }
-        this.makeMove(move.row, move.col);
+        const { row, col } = bestMove(this.board, this.playerSymbol, this.computerSymbol);
+        this.makeMove(row, col);
     }
 
     updateBoardUI() {
@@ -180,6 +171,7 @@ class Game {
     }
 
     showDialog(message, buttons = '<button onclick="document.querySelector(\'.dialog\').remove();">OK</button>') {
+        console.log("Showing dialog: ", message);
         const dialogBox = document.createElement('div');
         dialogBox.classList.add('dialog', 'show');
         dialogBox.innerHTML = `
@@ -190,6 +182,12 @@ class Game {
     }
 }
 
-document.addEventListener('DOMContentLoaded', () => {
-    window.game = new Game();
-});
+    const params = new URLSearchParams(window.location.search);
+    const difficulty = params.get('difficulty') || 'impossible';
+    const session = JSON.parse(sessionStorage.getItem('session'));
+    const email = session?.email;
+    if (!email) {
+        window.location.href = 'index.html'; // Redirect to login if email is not found
+    } else {
+        window.game = new Game(difficulty, email);
+    }

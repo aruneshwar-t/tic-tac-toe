@@ -1,61 +1,93 @@
 <!DOCTYPE html>
 <html>
-    <head>
-        <meta charset="utf-8">
-        <meta http-equiv="X-UA-Compatible" content="IE=edge">
-        <title>Tic Tac Toe</title>
-        <meta name="description" content="">
-        <meta name="viewport" content="width=device-width, initial-scale=1">
-        <link rel="stylesheet" href="../CSS/game.css">
-        <link href="https://fonts.googleapis.com/css2?family=Tiny5&display=swap" rel="stylesheet">
-    </head>
-    <body>
-        <div class="card">
-            <div class="game-top">
-                <div class="board">
-                    <div class="cell" data-cell></div>
-                    <div class="cell" data-cell></div>
-                    <div class="cell" data-cell></div>
-                    <div class="cell" data-cell></div>
-                    <div class="cell" data-cell></div>
-                    <div class="cell" data-cell></div>
-                    <div class="cell" data-cell></div>
-                    <div class="cell" data-cell></div>
-                    <div class="cell" data-cell></div>
-                </div>
-                <div class="stop-buttons">
-                    <div class="home-button">
-                        <div class="button-wrapper" onclick="location.href = 'game-menu.html'">
-                            <img src="../../assets/home.svg" alt="icon" class="button-icon">
-                        </div>
-                    </div>
-                    <div class="reset-button">
-                        <div class="button-wrapper" id="reset-button">
-                            <img src="../../assets/reset.svg" alt="icon" class="button-icon">
-                        </div>
-                    </div>
-                </div>
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>Tic Tac Toe</title>
+    <meta name="description" content="">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="../CSS/game.css">
+    <link href="https://fonts.googleapis.com/css2?family=Tiny5&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="card">
+        <div class="game-top">
+            <div class="board">
+                <div class="cell" data-cell></div>
+                <div class="cell" data-cell></div>
+                <div class="cell" data-cell></div>
+                <div class="cell" data-cell></div>
+                <div class="cell" data-cell></div>
+                <div class="cell" data-cell></div>
+                <div class="cell" data-cell></div>
+                <div class="cell" data-cell></div>
+                <div class="cell" data-cell></div>
             </div>
-            <div class="game-bottom">
-                <div class="score-container">
-                    <div class="left-player">
-                        <div class="player-name">ARUN</div>
-                        <div class="player-symbol">
-                            <img src="../../assets/x.svg" alt="symbol">
-                        </div>
-                        <div class="player-score">0</div>                    
+            <div class="stop-buttons">
+                <div class="logout-button">
+                    <div class="button-wrapper" id="logout-button">
+                        <img src="../../assets/logout.svg" alt="icon" class="button-icon">
                     </div>
-                    <div class="right-player">
-                        <div class="player-score">0</div> 
-                        <div class="player-symbol">
-                            <img src="../../assets/o.svg" alt="symbol">
-                        </div>   
-                        <div class="player-name">PLAYER 2</div>
+                </div>
+                <div class="home-button">
+                    <div class="button-wrapper" onclick="location.href = 'game-menu.html'">
+                        <img src="../../assets/home.svg" alt="icon" class="button-icon">
+                    </div>
+                </div>
+                <div class="reset-button">
+                    <div class="button-wrapper" id="reset-button">
+                        <img src="../../assets/reset.svg" alt="icon" class="button-icon">
                     </div>
                 </div>
             </div>
         </div>
-        <script src="../JS/game-impossible.js" type="module"></script>
-        
-    </body>
+        <div class="game-bottom">
+            <div class="score-container">
+                <div class="left-player">
+                    <div class="player-name">ARUN</div>
+                    <div class="player-symbol">
+                        <img src="../../assets/x.svg" alt="symbol">
+                    </div>
+                    <div class="player-score">0</div>                    
+                </div>
+                <div class="right-player">
+                    <div class="player-score">0</div> 
+                    <div class="player-symbol">
+                        <img src="../../assets/o.svg" alt="symbol">
+                    </div>   
+                    <div class="player-name">PLAYER 2</div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script src="../JS/auth.js" async defer></script>
+    <script src="../JS/logout.js" async defer></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            console.log("DOMContentLoaded event fired in game.html");
+
+            const params = new URLSearchParams(window.location.search);
+            const difficulty = params.get('difficulty');
+            let script = document.createElement('script');
+            script.type = 'module';
+            
+            if (difficulty === 'medium') {
+                script.src = '../JS/game-medium.js';
+            } else if (difficulty === 'impossible') {
+                script.src = '../JS/game-impossible.js';
+            } else {
+                script.src = '../JS/game.js';
+            }
+            
+            console.log(`Loading script: ${script.src}`);
+            script.onload = () => {
+                console.log(`Script loaded: ${script.src}`);
+            };
+            script.onerror = (error) => {
+                console.error(`Failed to load script: ${script.src}`, error);
+            };
+            document.body.appendChild(script);
+        });
+    </script>
+</body>
 </html>
