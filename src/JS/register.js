@@ -9,10 +9,30 @@ document.addEventListener('DOMContentLoaded', function() {
         const password = document.getElementById('password').value;
         const confirmPassword = document.getElementById('confirm-password').value;
 
-        if (validateEmail(email) && validateName(name) && validatePassword(password, name, email) && validateConfirmPassword(password, confirmPassword)) {
+        let isValid = true;
+
+        if (!validateEmail(email)) {
+            alert('Invalid email format.');
+            isValid = false;
+        }
+
+        if (!validateName(name)) {
+            alert('Name cannot be empty.');
+            isValid = false;
+        }
+
+        if (!validatePassword(password, name, email)) {
+            alert('Password must be at least 8 characters long, contain both letters and numbers, and should not include your name or email.');
+            isValid = false;
+        }
+
+        if (!validateConfirmPassword(password, confirmPassword)) {
+            alert('Passwords do not match.');
+            isValid = false;
+        }
+
+        if (isValid) {
             register(email, name, password);
-        } else {
-            alert('Invalid input.');
         }
     });
 
