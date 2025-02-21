@@ -1,7 +1,7 @@
 // Utility functions
 
 export function createBoard() {
-    console.log("Board created")
+    console.log("Board created");
     const board = [];
     for (let i = 0; i < 3; i++) {
         board.push(new Array(3).fill(null));
@@ -29,7 +29,6 @@ export function checkWinner(board) {
             return line[0];
         }
     }
-
     return null;
 }
 
@@ -48,7 +47,7 @@ export function randomMove(board) {
     return { row: emptyCells[randomIndex][0], col: emptyCells[randomIndex][1] };
 }
 
-// Scoring system
+// Scoring system for games against computer
 export class Score {
     constructor(difficulty, email) {
         this.difficulty = difficulty;
@@ -91,5 +90,13 @@ export class Score {
         this.computerScore = 0;
         this.saveScores();
         this.updateScoreUI();
+    }
+
+    static resetAllScores(email) {
+        const difficulties = ['easy', 'medium', 'impossible'];
+        difficulties.forEach(difficulty => {
+            const score = new Score(difficulty, email);
+            score.resetScores();
+        });
     }
 }

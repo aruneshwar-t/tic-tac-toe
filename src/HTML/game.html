@@ -44,7 +44,7 @@
         <div class="game-bottom">
             <div class="score-container">
                 <div class="left-player">
-                    <div class="player-name">ARUN</div>
+                    <div class="player-name" id="player-name">Player 1</div>
                     <div class="player-symbol">
                         <img src="../../assets/x.svg" alt="symbol">
                     </div>
@@ -55,16 +55,20 @@
                     <div class="player-symbol">
                         <img src="../../assets/o.svg" alt="symbol">
                     </div>   
-                    <div class="player-name">PLAYER 2</div>
+                    <div class="player-name">Player 2</div>
                 </div>
             </div>
         </div>
     </div>
-    <script src="../JS/auth.js" async defer></script>
-    <script src="../JS/logout.js" async defer></script>
+    <script src="../JS/auth.js" type="module"></script>
+    <script src="../JS/logout.js" type="module"></script>
     <script>
         document.addEventListener('DOMContentLoaded', () => {
             console.log("DOMContentLoaded event fired in game.html");
+
+            const session = JSON.parse(sessionStorage.getItem('session'));
+            const playerName = session?.name || 'Player 1';
+            document.getElementById('player-name').textContent = playerName;
 
             const params = new URLSearchParams(window.location.search);
             const difficulty = params.get('difficulty');
@@ -75,6 +79,8 @@
                 script.src = '../JS/game-medium.js';
             } else if (difficulty === 'impossible') {
                 script.src = '../JS/game-impossible.js';
+            } else if (difficulty === 'manual') {
+                script.src = '../JS/game-manual.js';
             } else {
                 script.src = '../JS/game.js';
             }

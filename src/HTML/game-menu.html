@@ -1,39 +1,39 @@
 <!DOCTYPE html>
 <html>
-    <head>
-        <meta charset="utf-8">
-        <meta http-equiv="X-UA-Compatible" content="IE=edge">
-        <title>Game Menu</title>
-        <meta name="description" content="">
-        <meta name="viewport" content="width=device-width, initial-scale=1">
-        <link rel="stylesheet" href="../CSS/game-menu.css">
-        <link href="https://fonts.googleapis.com/css2?family=Tiny5&display=swap" rel="stylesheet">
-    </head>
-    <body>
-        <div class="card">
-            <div class="logout-button">
-                <div class="button-wrapper" id="logout-button">
-                    <img src="../../assets/logout.svg" alt="icon" class="button-icon">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>Game Menu</title>
+    <meta name="description" content="">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="../CSS/game-menu.css">
+    <link href="https://fonts.googleapis.com/css2?family=Tiny5&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="card">
+        <div class="logout-button">
+            <div class="button-wrapper" id="logout-button">
+                <img src="../../assets/logout.svg" alt="icon" class="button-icon">
+            </div>
+        </div>
+        <div class="card-title">PLAYER MODE</div>
+        <div class="play-mode-redirects">
+            <div class="play-bots-redirect">
+                <div class="button-wrapper" onclick="location.href = 'game-difficulty.html'">
+                    <img src="../../assets/bot.svg" alt="icon" class="button-icon">
+                    <span>PLAY BOTS</span>
                 </div>
             </div>
-            <div class="card-title">PLAYER MODE</div>
-            <div class="play-mode-redirects">
-                <div class="play-bots-redirect">
-                    <div class="button-wrapper" onclick="location.href = 'game-difficulty.html'">
-                        <img src="../../assets/bot.svg" alt="icon" class="button-icon">
-                        <span>PLAY BOTS</span>
-                    </div>
-                </div>
-                <div class="multiplayer-redirect">
-                    <div class="button-wrapper" onclick="location.href = 'game.html'">
-                        <img src="../../assets/person.svg" alt="icon" class="button-icon">
-                        <span>MULTIPLAYER</span>
-                    </div>
+            <div class="multiplayer-redirect">
+                <div class="button-wrapper" onclick="location.href = 'game.html?difficulty=manual'">
+                    <img src="../../assets/person.svg" alt="icon" class="button-icon">
+                    <span>MULTIPLAYER</span>
                 </div>
             </div>
         </div>
-        
-        <script src="../JS/auth.js" type="module"></script>
-        <script src="../JS/logout.js" type="module"></script>
-    </body>
+    </div>
+    
+    <script src="../JS/auth.js" type="module"></script>
+    <script src="../JS/logout.js" type="module"></script>
+</body>
 </html>

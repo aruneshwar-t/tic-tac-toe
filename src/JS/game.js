@@ -1,42 +1,62 @@
-import { createBoard, checkWinner, isBoardFull, randomMove, Score } from './utils.js';
+import { createBoard, checkWinner, isBoardFull, randomMove } from './utils.js';
 
-// Add a console statement at the top of the file to confirm it runs
-console.log("game.js is loaded and running");
+class Score {
+    constructor(email) {
+        this.email = email;
+        const savedScores = JSON.parse(localStorage.getItem('scores')) || {};
+        const userScores = savedScores[this.email] || { userScore: 0, computerScore: 0 };
+        this.userScore = userScores.userScore;
+        this.computerScore = userScores.computerScore;
+        this.updateScoreUI();
+    }
 
-function easyAIMove(board, playerSymbol, computerSymbol) {
-    console.log("easyAIMove called");
-    let emptyCells = [];
-    for (let row = 0; row < 3; row++) {
-        for (let col = 0; col < 3; col++) {
-            if (!board[row][col]) emptyCells.push([row, col]);
+    incrementPlayerScore(player) {
+        if (player === 'user') {
+            this.userScore++;
+        } else if (player === 'computer') {
+            this.computerScore++;
         }
+        this.saveScores();
+        this.updateScoreUI();
     }
 
-    let validMoves = emptyCells.filter(([row, col]) => {
-        const testBoard = JSON.parse(JSON.stringify(board));
-        testBoard[row][col] = computerSymbol;
-        return checkWinner(testBoard) !== computerSymbol && checkWinner(testBoard) !== playerSymbol;
-    });
-
-    if (validMoves.length === 0) {
-        validMoves = emptyCells;
+    updateScoreUI() {
+        document.querySelector('.left-player .player-score').textContent = this.userScore;
+        document.querySelector('.right-player .player-score').textContent = this.computerScore;
     }
 
-    const randomIndex = Math.floor(Math.random() * validMoves.length);
-    return { row: validMoves[randomIndex][0], col: validMoves[randomIndex][1] };
+    saveScores() {
+        const savedScores = JSON.parse(localStorage.getItem('scores')) || {};
+        savedScores[this.email] = {
+            userScore: this.userScore,
+            computerScore: this.computerScore,
+        };
+        localStorage.setItem('scores', JSON.stringify(savedScores));
+    }
+
+    resetScores() {
+        this.userScore = 0;
+        this.computerScore = 0;
+        this.saveScores();
+        this.updateScoreUI();
+    }
+
+    static resetScores(email) {
+        const score = new Score(email);
+        score.resetScores();
+    }
 }
 
 class Game {
-    constructor(difficulty, email) {
+    constructor(email) {
         console.log("Game initialized in game.js");
+        this.email = email;
         this.board = createBoard();
         this.currentPlayer = 'X';
         this.isGameOver = false;
-        this.playerSymbol = 'X';
-        this.computerSymbol = 'O';
-        this.difficulty = difficulty;
-        this.email = email;
-        this.score = new Score(difficulty, email);
+        this.playerX = 'user';
+        this.playerO = 'computer';
+        this.score = new Score(email);
         this.init();
     }
 
@@ -54,7 +74,6 @@ class Game {
     }
 
     askPlayerSymbol() {
-        console.log("Asking player to choose symbol...");
         this.showDialog(
             'Choose your symbol:',
             `<button onclick="window.game.setPlayerSymbol('X')">X</button>
@@ -63,24 +82,19 @@ class Game {
     }
 
     setPlayerSymbol(symbol) {
-        console.log(`Player chose symbol: ${symbol}`);
-        this.playerSymbol = symbol;
-        this.computerSymbol = this.playerSymbol === 'X' ? 'O' : 'X';
-        const dialog = document.querySelector('.dialog');
-        if (dialog) dialog.remove();
-
-        if (this.playerSymbol === 'O') {
-            this.makeComputerMove();
-        }
+        this.playerX = symbol === 'X' ? 'user' : 'computer';
+        this.playerO = symbol === 'O' ? 'user' : 'computer';
+        document.querySelector('.left-player .player-symbol img').src = symbol === 'X' ? '../../assets/x.svg' : '../../assets/o.svg';
+        document.querySelector('.right-player .player-symbol img').src = symbol === 'O' ? '../../assets/x.svg' : '../../assets/o.svg';
+        document.querySelector('.dialog').remove();
+        this.updateStatusUI(`Player ${this.currentPlayer}'s turn`);
     }
 
     reset() {
-        console.log("Resetting game...");
         this.board = createBoard();
         this.currentPlayer = 'X';
         this.isGameOver = false;
         this.updateBoardUI();
-        this.updateStatusUI(`Player ${this.currentPlayer}'s turn`);
         this.askPlayerSymbol();
     }
 
@@ -93,27 +107,23 @@ class Game {
         const winner = checkWinner(this.board);
         if (winner) {
             this.isGameOver = true;
-            this.showDialog(`Player ${winner} wins!`);
-            if (winner === this.playerSymbol) {
-                this.score.incrementPlayerScore('user');
-            } else {
-                this.score.incrementPlayerScore('computer');
-            }
+            const winningPlayer = winner === 'X' ? this.playerX : this.playerO;
+            this.showDialog(`Player ${winningPlayer === 'user' ? '1' : '2'} wins!`);
+            this.score.incrementPlayerScore(winningPlayer);
         } else if (isBoardFull(this.board)) {
             this.isGameOver = true;
             this.showDialog(`It's a draw!`);
         } else {
             this.currentPlayer = this.currentPlayer === 'X' ? 'O' : 'X';
-            if (this.currentPlayer === this.computerSymbol) {
-                this.makeComputerMove();
-            } else {
-                this.updateStatusUI(`Player ${this.currentPlayer}'s turn`);
+            this.updateStatusUI(`Player ${this.currentPlayer}'s turn`);
+            if (this.currentPlayer === 'O' && this.playerO === 'computer') {
+                setTimeout(() => this.makeComputerMove(), 500);
             }
         }
     }
 
     makeComputerMove() {
-        const { row, col } = easyAIMove(this.board, this.playerSymbol, this.computerSymbol);
+        const { row, col } = randomMove(this.board);
         this.makeMove(row, col);
     }
 
@@ -151,12 +161,11 @@ class Game {
     }
 }
 
-    const params = new URLSearchParams(window.location.search);
-    const difficulty = params.get('difficulty') || 'easy';
     const session = JSON.parse(sessionStorage.getItem('session'));
     const email = session?.email;
     if (!email) {
         window.location.href = 'index.html'; // Redirect to login if email is not found
     } else {
-        window.game = new Game(difficulty, email);
+        window.game = new Game(email);
     }
+    document.querySelector(".right-player .player-name").textContent = "Easy AI";

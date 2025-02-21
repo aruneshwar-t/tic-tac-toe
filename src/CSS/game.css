@@ -123,6 +123,8 @@ body, html {
     display: flex;
     justify-content: center;
     align-items: center;
+    padding:4px;
+    border: 2px solid var(--red);
 }
 
 .player-symbol img {
@@ -133,6 +135,14 @@ body, html {
 .player-score {
     font-size: 2em;
     font-weight: bold;
+}
+
+.left-player .player-score{ 
+    margin-right:10px;
+}
+
+.right-player .player-score{ 
+    margin-left:15px;
 }
 
 .dialog {

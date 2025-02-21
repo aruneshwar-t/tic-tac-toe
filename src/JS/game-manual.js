@@ -1,52 +1,62 @@
-import { createBoard, checkWinner, isBoardFull, randomMove, Score } from './utils.js';
+import { createBoard, checkWinner, isBoardFull } from './utils.js';
 
-// Add a console statement at the top of the file to confirm it runs
-console.log("game-medium.js is loaded and running");
+class ManualScore {
+    constructor(email) {
+        this.email = email;
+        const savedScores = JSON.parse(sessionStorage.getItem('manualScores')) || {};
+        const userScores = savedScores[this.email] || { userScore: 0, opponentScore: 0 };
+        this.userScore = userScores.userScore;
+        this.opponentScore = userScores.opponentScore;
+        this.updateScoreUI();
+    }
 
-function findWinningMove(board, symbol) {
-    for (let row = 0; row < 3; row++) {
-        for (let col = 0; col < 3; col++) {
-            if (!board[row][col]) {
-                board[row][col] = symbol;
-                if (checkWinner(board) === symbol) {
-                    board[row][col] = null;
-                    return { row, col };
-                }
-                board[row][col] = null;
-            }
+    incrementPlayerScore(player) {
+        if (player === 'user') {
+            this.userScore++;
+        } else if (player === 'opponent') {
+            this.opponentScore++;
         }
-    }
-    return null;
-}
-
-function mediumAIMove(board, playerSymbol, computerSymbol) {
-    // Check if the computer can win in the next move
-    let winningMove = findWinningMove(board, computerSymbol);
-    if (winningMove) {
-        return winningMove;
+        this.saveScores();
+        this.updateScoreUI();
     }
 
-    // Check if the player can win in the next move and block them
-    let blockingMove = findWinningMove(board, playerSymbol);
-    if (blockingMove) {
-        return blockingMove;
+    updateScoreUI() {
+        document.querySelector('.left-player .player-score').textContent = this.userScore;
+        document.querySelector('.right-player .player-score').textContent = this.opponentScore;
     }
 
-    // Otherwise, make a random move
-    return randomMove(board);
+    saveScores() {
+        const savedScores = JSON.parse(sessionStorage.getItem('manualScores')) || {};
+        savedScores[this.email] = {
+            userScore: this.userScore,
+            opponentScore: this.opponentScore,
+        };
+        sessionStorage.setItem('manualScores', JSON.stringify(savedScores));
+    }
+
+    resetScores() {
+        this.userScore = 0;
+        this.opponentScore = 0;
+        this.saveScores();
+        this.updateScoreUI();
+    }
+
+    static resetManualScores(email) {
+        const score = new ManualScore(email);
+        score.resetScores();
+    }
 }
 
 class Game {
-    constructor(difficulty, email) {
-        console.log("Game initialized in game-medium.js");
+    constructor(email) {
+        console.log("Game initialized in game-manual.js");
+        this.email = email;
         this.board = createBoard();
         this.currentPlayer = 'X';
         this.isGameOver = false;
-        this.playerSymbol = 'X';
-        this.computerSymbol = 'O';
-        this.difficulty = difficulty;
-        this.email = email;
-        this.score = new Score(difficulty, email);
+        this.playerX = 'user';
+        this.playerO = 'opponent';
+        this.score = new ManualScore(email);
         this.init();
     }
 
@@ -64,7 +74,6 @@ class Game {
     }
 
     askPlayerSymbol() {
-        console.log("Asking player to choose symbol...");
         this.showDialog(
             'Choose your symbol:',
             `<button onclick="window.game.setPlayerSymbol('X')">X</button>
@@ -73,26 +82,19 @@ class Game {
     }
 
     setPlayerSymbol(symbol) {
-        console.log(`Player chose symbol: ${symbol}`);
-        this.playerSymbol = symbol;
-        this.computerSymbol = this.playerSymbol === 'X' ? 'O' : 'X';
+        this.playerX = symbol === 'X' ? 'user' : 'opponent';
+        this.playerO = symbol === 'O' ? 'user' : 'opponent';
         document.querySelector('.left-player .player-symbol img').src = symbol === 'X' ? '../../assets/x.svg' : '../../assets/o.svg';
         document.querySelector('.right-player .player-symbol img').src = symbol === 'O' ? '../../assets/x.svg' : '../../assets/o.svg';
-        const dialog = document.querySelector('.dialog');
-        if (dialog) dialog.remove();
-
-        if (this.playerSymbol === 'O') {
-            this.makeComputerMove();
-        }
+        document.querySelector('.dialog').remove();
+        this.updateStatusUI(`Player ${this.currentPlayer}'s turn`);
     }
 
     reset() {
-        console.log("Resetting game...");
         this.board = createBoard();
         this.currentPlayer = 'X';
         this.isGameOver = false;
         this.updateBoardUI();
-        this.updateStatusUI(`Player ${this.currentPlayer}'s turn`);
         this.askPlayerSymbol();
     }
 
@@ -105,28 +107,16 @@ class Game {
         const winner = checkWinner(this.board);
         if (winner) {
             this.isGameOver = true;
-            this.showDialog(`Player ${winner} wins!`);
-            if (winner === this.playerSymbol) {
-                this.score.incrementPlayerScore('user');
-            } else {
-                this.score.incrementPlayerScore('computer');
-            }
+            const winningPlayer = winner === 'X' ? this.playerX : this.playerO;
+            this.showDialog(`Player ${winningPlayer === 'user' ? '1' : '2'} wins!`);
+            this.score.incrementPlayerScore(winningPlayer);
         } else if (isBoardFull(this.board)) {
             this.isGameOver = true;
             this.showDialog(`It's a draw!`);
         } else {
             this.currentPlayer = this.currentPlayer === 'X' ? 'O' : 'X';
-            if (this.currentPlayer === this.computerSymbol) {
-                this.makeComputerMove();
-            } else {
-                this.updateStatusUI(`Player ${this.currentPlayer}'s turn`);
-            }
+            this.updateStatusUI(`Player ${this.currentPlayer}'s turn`);
         }
-    }
-
-    makeComputerMove() {
-        const { row, col } = mediumAIMove(this.board, this.playerSymbol, this.computerSymbol);
-        this.makeMove(row, col);
     }
 
     updateBoardUI() {
@@ -161,15 +151,18 @@ class Game {
         `;
         document.querySelector('.game-top').appendChild(dialogBox);
     }
+
+    static resetAllScores(email) {
+        Score.resetAllScores(email);
+        ManualScore.resetManualScores(email);
+        alert('All scores have been reset!');
+    }
 }
 
-const params = new URLSearchParams(window.location.search);
-const difficulty = params.get('difficulty') || 'medium';
-const session = JSON.parse(sessionStorage.getItem('session'));
-const email = session?.email;
-if (!email) {
-    window.location.href = 'index.html'; // Redirect to login if email is not found
-} else {
-    window.game = new Game(difficulty, email);
-}
-document.querySelector(".right-player .player-name").textContent = "Medium AI";
+    const session = JSON.parse(sessionStorage.getItem('session'));
+    const email = session?.email;
+    if (!email) {
+        window.location.href = 'index.html'; // Redirect to login if email is not found
+    } else {
+        window.game = new Game(email);
+    }
