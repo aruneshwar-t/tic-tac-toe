@@ -66,6 +66,8 @@ class Game {
         console.log(`Player chose symbol: ${symbol}`);
         this.playerSymbol = symbol;
         this.computerSymbol = this.playerSymbol === 'X' ? 'O' : 'X';
+        document.querySelector('.left-player .player-symbol img').src = symbol === 'X' ? '../../assets/x.svg' : '../../assets/o.svg';
+        document.querySelector('.right-player .player-symbol img').src = symbol === 'O' ? '../../assets/x.svg' : '../../assets/o.svg';
         const dialog = document.querySelector('.dialog');
         if (dialog) dialog.remove();
 
