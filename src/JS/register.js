@@ -12,22 +12,22 @@ document.addEventListener('DOMContentLoaded', function() {
         let isValid = true;
 
         if (!validateEmail(email)) {
-            alert('Invalid email format.');
+            showAlert('Invalid email format.');
             isValid = false;
         }
 
         if (!validateName(name)) {
-            alert('Name cannot be empty.');
+            showAlert('Name cannot be empty.');
             isValid = false;
         }
 
         if (!validatePassword(password, name, email)) {
-            alert('Password must be at least 8 characters long, contain both letters and numbers, and should not include your name or email.');
+            showAlert('Password must be at least 8 characters long, contain both letters and numbers, and should not include your name or email.');
             isValid = false;
         }
 
         if (!validateConfirmPassword(password, confirmPassword)) {
-            alert('Passwords do not match.');
+            showAlert('Passwords do not match.');
             isValid = false;
         }
 
@@ -60,15 +60,32 @@ document.addEventListener('DOMContentLoaded', function() {
         let users = JSON.parse(localStorage.getItem('users')) || [];
 
         if (users.some(user => user.email === email)) {
-            alert('This email is already registered.');
+            showAlert('This email is already registered.');
             return;
         }
 
         users.push({ email: email, name: name, password: password });
         localStorage.setItem('users', JSON.stringify(users));
 
-        alert('Registration successful!');
-        sessionStorage.setItem('session', JSON.stringify({ email: email, name: name }));
-        window.location.href = 'game-menu.html';
+        showAlert('Registration successful!', function() {
+            sessionStorage.setItem('session', JSON.stringify({ email: email, name: name }));
+            window.location.href = 'game-menu.html';
+        });
     }
+
+    function showAlert(message, callback) {
+        const alertBox = document.getElementById('customAlert');
+        const alertMessage = document.getElementById('alertMessage');
+        alertMessage.textContent = message;
+        alertBox.style.display = 'block';
+
+        alertBox.querySelector('button').onclick = function() {
+            alertBox.style.display = 'none';
+            if (callback) callback();
+        };
+    }
+
+    window.closeAlert = function() {
+        document.getElementById('customAlert').style.display = 'none';
+    };
 });

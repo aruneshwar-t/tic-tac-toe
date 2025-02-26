@@ -11,7 +11,7 @@ document.addEventListener('DOMContentLoaded', function() {
             const name = getUserByEmail(email).name;
             login(email, name);
         } else {
-            alert('Invalid email or password.');
+            showAlert('Invalid email or password.');
         }
     });
 
@@ -33,7 +33,24 @@ document.addEventListener('DOMContentLoaded', function() {
 
     function login(email, name) {
         sessionStorage.setItem('session', JSON.stringify({ email: email, name: name }));
-        alert('Login successful!');
-        window.location.href = 'game-menu.html';
+        showAlert('Login successful!', function() {
+            window.location.href = 'game-menu.html';
+        });
     }
+
+    function showAlert(message, callback) {
+        const alertBox = document.getElementById('customAlert');
+        const alertMessage = document.getElementById('alertMessage');
+        alertMessage.textContent = message;
+        alertBox.style.display = 'block';
+
+        alertBox.querySelector('button').onclick = function() {
+            alertBox.style.display = 'none';
+            if (callback) callback();
+        };
+    }
+
+    window.closeAlert = function() {
+        document.getElementById('customAlert').style.display = 'none';
+    };
 });

@@ -29,7 +29,23 @@ input::placeholder{
     border-radius: 8px;
     z-index: 1000;
     width: 300px;
-  }
+    padding: 20px;
+    text-align: center;,
+    
+}
+
+.alert-box p {
+    font-size:20px;
+}
+
+.alert-box button {
+    background-color: var(--red);
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 5px;
+    cursor: pointer;
+}
 
 .card{
     width:400px;

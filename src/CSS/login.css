@@ -54,7 +54,22 @@ input, .login-submit{
     border-radius: 8px;
     z-index: 1000;
     width: 300px;
-  }
+    padding: 20px;
+    text-align: center;
+}
+
+.alert-box p {
+    font-size:20px;
+}
+
+.alert-box button {
+    background-color: var(--blue);
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 5px;
+    cursor: pointer;
+}
 
 input{
     background-color: var(--violet);
@@ -71,7 +86,6 @@ input{
     width:150px;
     height:40px;
     border-radius: 20px;
-
 }
 
 ::placeholder{
